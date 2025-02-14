@@ -1,55 +1,12 @@
-resource "kubernetes_deployment" "python_web_app" {
-  metadata {
-    name = "python-web-app"
-    labels = {
-      app = "python-web-app"
-    }
-  }
+resource "null_resource" "apply_kubernetes_manifests" {
+  depends_on = [aws_eks_cluster.cluster]
 
-  spec {
-    replicas = 2
-
-    selector {
-      match_labels = {
-        app = "python-web-app"
-      }
-    }
-
-    template {
-      metadata {
-        labels = {
-          app = "python-web-app"
-        }
-      }
-
-      spec {
-        container {
-          name  = "python-web-app"
-          image = "${aws_ecr_repository.repo.repository_url}:latest"
-          port {
-            container_port = 5000
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "python_web_service" {
-  metadata {
-    name = "python-web-app"
-  }
-
-  spec {
-    selector = {
-      app = "python-web-app"
-    }
-
-    port {
-      port        = 80
-      target_port = 5000
-    }
-
-    type = "LoadBalancer"
+  provisioner "local-exec" {
+    command = <<EOT
+      aws eks update-kubeconfig --name ${var.cluster_name} --region ${var.aws_region}
+      kubectl apply -f ../kubernetes/deployment.yaml
+      kubectl apply -f ../kubernetes/service.yaml
+      kubectl apply -f ../kubernetes/ingress.yaml
+    EOT
   }
 }

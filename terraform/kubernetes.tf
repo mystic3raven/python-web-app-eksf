@@ -31,12 +31,26 @@ resource "kubernetes_deployment" "python_web_app" {
         }
       }
 
-      spec {
+       spec {
         container {
           name  = "python-web-app"
           image = "myrepo/python-web-app:latest"
           port {
             container_port = 5000
+          }
+          resources {
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
+          }
+          env {
+            name  = "ENVIRONMENT"
+            value = "production"
           }
         }
       }
@@ -72,13 +86,34 @@ resource "kubernetes_config_map" "aws_auth" {
     name      = "aws-auth"
     namespace = "kube-system"
   }
-
   data = {
-    "mapRoles" = <<EOT
-    - rolearn: arn:aws:iam::123456789012:role/GitHubActionsOIDC
-      username: github-actions
-      groups:
-        - system:masters
-    EOT
+    mapRoles = yamlencode([
+      {
+        rolearn  = "arn:aws:iam::886436961042:role/GitHubActionsOIDC"
+        username = "GitHubActionsOIDC"
+        groups   = ["system:masters"]
+      }
+    ])
   }
+}# 🚀 Kubernetes ConfigMap for aws-auth (IAM Role Authentication)
+
+# 🚀 Kubernetes RBAC Role Binding for GitHub Actions OIDC
+resource "kubernetes_cluster_role_binding" "github_actions_rbac" {
+  metadata {
+    name = "github-actions-rbac"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+
+  subjects = [
+    {
+      kind      = "User"
+      name      = "GitHubActionsOIDC"  # Matches IAM Role username in aws-auth
+      api_group = "rbac.authorization.k8s.io"
+    }
+  ]
 }

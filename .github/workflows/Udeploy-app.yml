@@ -26,12 +26,12 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
+          aws-region: us-west-2
 
       - name: Login to Amazon ECR
         run: |
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION=us-east-1
+          REGION=us-west-2
           ECR_REPO="$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/python-web-app"
           
           aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPO
@@ -39,7 +39,7 @@ jobs:
       - name: Build Docker Image
         run: |
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION=us-east-1
+          REGION=us-west-2
           ECR_REPO="$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/python-web-app"
 
           docker build -t python-web-app .
@@ -48,7 +48,7 @@ jobs:
       - name: Push Docker Image to ECR
         run: |
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION=us-east-1
+          REGION=us-west-2
           ECR_REPO="$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/python-web-app"
 
           docker push $ECR_REPO:latest
@@ -56,13 +56,13 @@ jobs:
       - name: Update Kubernetes Deployment
         run: |
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          REGION=us-east-1
+          REGION=us-west-2
           ECR_REPO="$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/python-web-app"
 
           sed -i "s|<ECR_REPO>|$ECR_REPO|g" terraform/k8s-deployment.yaml
 
       - name: Apply Kubernetes Deployment
         run: |
-          aws eks update-kubeconfig --name python-web-app-cluster --region us-east-1
+          aws eks update-kubeconfig --name python-web-app-cluster --region us-west-2
           kubectl apply -f terraform/k8s-deployment.yaml
           kubectl apply -f terraform/k8s-service.yaml

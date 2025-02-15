@@ -1,7 +1,7 @@
 
 # Fetch existing VPC
 data "aws_vpc" "existing_vpc" {
-  id = "vpc-041a3b2e4a7f33dac" # Use the actual VPC ID from AWS CLI
+  default = true
 }
 
 # Fetch existing public subnets

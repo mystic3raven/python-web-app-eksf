@@ -7,6 +7,4 @@ env/*
 *.tfstate.backup.*
 *.tfvars
 .terraform.lock.hcl
-terraform/.terraform
-terraform/.terraform
-terraform/.terraform/*
+

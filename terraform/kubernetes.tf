@@ -6,6 +6,23 @@ resource "kubernetes_deployment" "python_web_app" {
     }
   }
 
+
+  resource "kubernetes_config_map" "aws_auth" {
+    metadata {
+      name      = "aws-auth"
+      namespace = "kube-system"
+    }
+
+    data = {
+      "mapRoles" = <<EOT
+    - rolearn: arn:aws:iam::886436961042:role/GitHubActionsOIDC
+      username: github-actions
+      groups:
+        - system:masters
+    EOT
+    }
+  }
+
   spec {
     replicas = 2
 
@@ -34,6 +51,7 @@ resource "kubernetes_deployment" "python_web_app" {
     }
   }
 }
+
 
 resource "kubernetes_service" "python_web_service" {
   metadata {

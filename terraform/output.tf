@@ -1,6 +1,6 @@
 output "eks_cluster_endpoint" {
   description = "EKS Cluster Endpoint"
-  value       = aws_eks_cluster.cluster.endpoint
+  value       = aws_eks_cluster.eks_cluster.endpoint
 }
 
 output "ecr_repository_url" {

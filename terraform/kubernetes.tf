@@ -35,7 +35,7 @@ resource "kubernetes_deployment" "python_web_app" {
         container {
           name  = "python-web-app"
           image = "myrepo/python-web-app:latest"
-          ports {
+          port {
             container_port = 5000
           }
         }

@@ -3,7 +3,7 @@
 data "aws_vpc" "existing_vpc" {
   filter {
     name   = "tag:Name"
-    values = ["my-vpc"]  # Change to your VPC name
+    values = ["vpc-041a3b2e4a7f33dac"]  # Change to your VPC name
   }
 }
 
@@ -17,12 +17,12 @@ data "aws_subnets" "existing_public_subnets" {
 
 # Fetch the existing IAM role for EKS Cluster (Ensure this IAM role exists in AWS)
 data "aws_iam_role" "eks_cluster_role" {
-  name = "eks-cluster-role" # Ensure this matches the actual IAM role in AWS
+  name = "AWSServiceRoleForAmazonEKS" # Ensure this matches the actual IAM role in AWS
 }
 
 # Fetch the existing IAM role for EKS Node Group
 data "aws_iam_role" "eks_node_role" {
-  name = "eks-node-role" # Ensure this matches the actual IAM role in AWS
+  name = "AWSServiceRoleForAmazonEKSNodegroup" # Ensure this matches the actual IAM role in AWS
 }
 # EKS Cluster using existing subnets
 resource "aws_eks_cluster" "eks_cluster" {

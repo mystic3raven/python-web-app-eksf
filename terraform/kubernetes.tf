@@ -1,25 +1,17 @@
+# Define a Namespace for the application
+resource "kubernetes_namespace" "python_app" {
+  metadata {
+    name = "python-app"
+  }
+}
+
+# Kubernetes Deployment for Python Web App
 resource "kubernetes_deployment" "python_web_app" {
   metadata {
-    name = "python-web-app"
+    name      = "python-web-app"
+    namespace = kubernetes_namespace.python_app.metadata[0].name
     labels = {
       app = "python-web-app"
-    }
-  }
-
-
-  resource "kubernetes_config_map" "aws_auth" {
-    metadata {
-      name      = "aws-auth"
-      namespace = "kube-system"
-    }
-
-    data = {
-      "mapRoles" = <<EOT
-    - rolearn: arn:aws:iam::886436961042:role/GitHubActionsOIDC
-      username: github-actions
-      groups:
-        - system:masters
-    EOT
     }
   }
 
@@ -42,8 +34,8 @@ resource "kubernetes_deployment" "python_web_app" {
       spec {
         container {
           name  = "python-web-app"
-          image = "${aws_ecr_repository.repo.repository_url}:latest"
-          port {
+          image = "myrepo/python-web-app:latest"
+          ports {
             container_port = 5000
           }
         }
@@ -52,10 +44,11 @@ resource "kubernetes_deployment" "python_web_app" {
   }
 }
 
-
+# Kubernetes Service to expose the app
 resource "kubernetes_service" "python_web_service" {
   metadata {
-    name = "python-web-app"
+    name      = "python-web-service"
+    namespace = kubernetes_namespace.python_app.metadata[0].name
   }
 
   spec {
@@ -64,10 +57,28 @@ resource "kubernetes_service" "python_web_service" {
     }
 
     port {
+      protocol    = "TCP"
       port        = 80
       target_port = 5000
     }
 
     type = "LoadBalancer"
+  }
+}
+
+# Kubernetes ConfigMap for aws-auth (IAM Role Authentication)
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    "mapRoles" = <<EOT
+    - rolearn: arn:aws:iam::123456789012:role/GitHubActionsOIDC
+      username: github-actions
+      groups:
+        - system:masters
+    EOT
   }
 }

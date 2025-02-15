@@ -14,12 +14,12 @@ data "aws_subnets" "existing_public_subnets" {
 
 # Fetch the existing IAM role for EKS Cluster (Ensure this IAM role exists in AWS)
 data "aws_iam_role" "eks_cluster_role" {
-  name = "AWSServiceRoleForAmazonEKS" # Ensure this matches the actual IAM role in AWS
+  name = "eksctl-python-web-app-cluster-cluster-ServiceRole-HQMFK6q2yKCM" # Ensure this matches the actual IAM role in AWS
 }
 
 # Fetch the existing IAM role for EKS Node Group
 data "aws_iam_role" "eks_node_role" {
-  name = "AWSServiceRoleForAmazonEKSNodegroup" # Ensure this matches the actual IAM role in AWS
+  name = "eksctl-python-web-app-cluster-node-NodeInstanceRole-FY2GrJjYcbMY" # Ensure this matches the actual IAM role in AWS
 }
 # EKS Cluster using existing subnets
 resource "aws_eks_cluster" "eks_cluster" {

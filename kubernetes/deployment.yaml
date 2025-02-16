@@ -17,8 +17,8 @@ spec:
         app: python-web
     spec:
       containers:
-      - name: python-web
-        image: REPLACE_ME
-        ports:
-          - containerPort: 8080
-        resources: {}
+        - name: python-web
+          image: mystic3raven/python-web-app:latest # Replace with your actual image
+          ports:
+            - containerPort: 8080
+          resources: {}

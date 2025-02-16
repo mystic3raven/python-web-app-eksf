@@ -19,7 +19,7 @@ data "aws_iam_role" "eks_cluster_role" {
 
 # Fetch the existing IAM role for EKS Node Group
 data "aws_iam_role" "eks_node_role" {
-  name = "eksctl-python-web-app-cluster-node-NodeInstanceRole-Config" # Ensure this matches the actual IAM role in AWS
+  name = "eksctl-python-web-app-cluster-node-NodeInstanceRole-FY2GrJjYcbMY" # Ensure this matches the actual IAM role in AWS
 }
 # EKS Cluster using existing subnets
 resource "aws_eks_cluster" "eks_cluster" {

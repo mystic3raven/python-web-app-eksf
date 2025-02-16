@@ -95,7 +95,7 @@ resource "kubernetes_config_map" "aws_auth" {
       }
     ])
   }
-}# 🚀 Kubernetes ConfigMap for aws-auth (IAM Role Authentication)
+}#
 
 # 🚀 Kubernetes RBAC Role Binding for GitHub Actions OIDC
 resource "kubernetes_cluster_role_binding" "github_actions_rbac" {
@@ -109,11 +109,9 @@ resource "kubernetes_cluster_role_binding" "github_actions_rbac" {
     name      = "cluster-admin"
   }
 
-  subjects = [
-    {
-      kind      = "User"
-      name      = "GitHubActionsOIDC"  # Matches IAM Role username in aws-auth
-      api_group = "rbac.authorization.k8s.io"
-    }
-  ]
+  subject {
+    kind      = "User"
+    name      = "GitHubActionsOIDC"  # Matches IAM Role username in aws-auth
+    api_group = "rbac.authorization.k8s.io"
+  }
 }

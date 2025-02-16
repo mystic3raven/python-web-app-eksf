@@ -1,5 +1,5 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: python-web
   namespace: python-web
@@ -8,6 +8,7 @@ spec:
     app: python-web
   type: NodePort
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30080  # Change this if needed (valid range: 30000-32767)

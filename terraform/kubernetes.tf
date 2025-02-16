@@ -38,6 +38,12 @@ resource "kubernetes_deployment" "python_web_app" {
           port {
             container_port = 5000
           }
+          env_from {
+            config_map_ref {
+              name = kubernetes_config_map.python_web_config.metadata[0].name
+            }
+          }
+          
           resources {
             limits = {
               cpu    = "500m"

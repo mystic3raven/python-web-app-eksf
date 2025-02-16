@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: python-web
@@ -7,11 +7,17 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/group.name: python-web-ingress
 spec:
   rules:
-    - http:
+    - host: python-web.example.com  # Replace with your domain or remove if not using host-based routing
+      http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: python-web
-              servicePort: 80
+              service:
+                name: python-web
+                port:
+                  number: 80

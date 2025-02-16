@@ -67,5 +67,6 @@ jobs:
       - name: Apply Kubernetes Deployment
         run: |
           aws eks update-kubeconfig --name python-web-app-cluster --region us-west-2
+          kubectl apply -f kubernetes/configmap.yaml
           kubectl apply -f terraform/k8s-deployment.yaml
           kubectl apply -f terraform/k8s-service.yaml

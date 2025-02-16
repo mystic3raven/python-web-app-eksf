@@ -6,11 +6,15 @@ metadata:
   labels:
     app: python-web
 spec:
-  replicas: 1
+  replicas: 2  # You can adjust this based on load
   selector:
     matchLabels:
       app: python-web
-  strategy: {}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -18,7 +22,17 @@ spec:
     spec:
       containers:
         - name: python-web
-          image: mystic3raven/python-web-app:latest # Replace with your actual image
+          image: 886436961042.dkr.ecr.us-west-2.amazonaws.com/python-web-app:latest  # Replace with your actual ECR image
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
-          resources: {}
+          envFrom:
+            - configMapRef:
+                name: python-web-config  # Ensure this ConfigMap exists
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"

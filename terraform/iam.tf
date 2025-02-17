@@ -1,4 +1,3 @@
-# 🚀 IAM Role for EKS Cluster
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eks-cluster-role"
 
@@ -33,6 +32,54 @@ resource "aws_iam_role" "GitHubActionsOIDC" {
       }
     }]
   })
+}
+
+# 🚀 IAM Role for eks-admin
+resource "aws_iam_role" "eks_admin" {
+  name = "eks-admin"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        AWS = "arn:aws:iam::886436961042:root"
+      }
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+# 🚀 IAM Policy for eks-admin (Full Access to EKS)
+resource "aws_iam_policy" "eks_admin_policy" {
+  name        = "eks-admin-policy"
+  description = "Full access to manage EKS cluster"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:*",
+          "iam:GetRole",
+          "iam:PassRole",
+          "autoscaling:*",
+          "ec2:DescribeInstances",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeVpcs"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# 🚀 Attach IAM Policy to eks-admin Role
+resource "aws_iam_role_policy_attachment" "eks_admin_attach" {
+  policy_arn = aws_iam_policy.eks_admin_policy.arn
+  role       = aws_iam_role.eks_admin.name
 }
 
 # 🚀 IAM Policy for GitHub Actions Access to EKS

@@ -1,4 +1,3 @@
-# Define a Namespace for the application
 resource "kubernetes_namespace" "python_app" {
   metadata {
     name = "python-app"
@@ -89,7 +88,7 @@ resource "kubernetes_service" "python_web_service" {
 resource "kubernetes_config_map" "python_web_config" {
   metadata {
     name      = "python-web-config"
-    namespace = "python-web"
+    namespace = kubernetes_namespace.python_app.metadata[0].name
   }
 
   data = {
@@ -101,7 +100,6 @@ resource "kubernetes_config_map" "python_web_config" {
     LOG_LEVEL     = "info"
   }
 }
-
 
 # Kubernetes ConfigMap for aws-auth (IAM Role Authentication)
 resource "kubernetes_config_map" "aws_auth" {
@@ -115,12 +113,17 @@ resource "kubernetes_config_map" "aws_auth" {
         rolearn  = "arn:aws:iam::886436961042:role/GitHubActionsOIDC"
         username = "GitHubActionsOIDC"
         groups   = ["system:masters"]
+      },
+      {
+        rolearn  = "arn:aws:iam::886436961042:role/eks-admin"
+        username = "eks-admin"
+        groups   = ["system:masters"]
       }
     ])
   }
-} #
+}
 
-# 🚀 Kubernetes RBAC Role Binding for GitHub Actions OIDC
+# Kubernetes RBAC Role Binding for GitHub Actions OIDC
 resource "kubernetes_cluster_role_binding" "github_actions_rbac" {
   metadata {
     name = "github-actions-rbac"
@@ -135,6 +138,24 @@ resource "kubernetes_cluster_role_binding" "github_actions_rbac" {
   subject {
     kind      = "User"
     name      = "GitHubActionsOIDC" # Matches IAM Role username in aws-auth
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "eks_admin_rbac" {
+  metadata {
+    name = "eks-admin-rbac"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+
+  subject {
+    kind      = "User"
+    name      = "eks-admin" # Matches IAM Role username in aws-auth
     api_group = "rbac.authorization.k8s.io"
   }
 }

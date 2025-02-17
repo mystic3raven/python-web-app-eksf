@@ -1,5 +1,3 @@
-
-# Fetch existing VPC
 data "aws_vpc" "existing_vpc" {
   default = true
 }
@@ -14,27 +12,35 @@ data "aws_subnets" "existing_public_subnets" {
 
 # Fetch the existing IAM role for EKS Cluster (Ensure this IAM role exists in AWS)
 data "aws_iam_role" "eks_cluster_role" {
-  name = "eksctl-python-web-app-cluster-cluster-ServiceRole-HQMFK6q2yKCM" # Ensure this matches the actual IAM role in AWS
+  name = "eksctl-python-web-app-cluster-cluster-ServiceRole-HQMFK6q2yKCM"
 }
 
 # Fetch the existing IAM role for EKS Node Group
 data "aws_iam_role" "eks_node_role" {
-  name = "eksctl-python-web-app-cluster-node-NodeInstanceRole-FY2GrJjYcbMY" # Ensure this matches the actual IAM role in AWS
+  name = "eksctl-python-web-app-cluster-node-NodeInstanceRole-FY2GrJjYcbMY"
 }
+
+# Fetch the IAM role for eks-admin (Ensure this IAM role exists in AWS)
+data "aws_iam_role" "eks_admin_role" {
+  name = "eks-admin"
+}
+
 # EKS Cluster using existing subnets
 resource "aws_eks_cluster" "eks_cluster" {
   name     = var.cluster_name
   role_arn = data.aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-    subnet_ids = data.aws_subnets.existing_public_subnets.ids # Fetch existing subnets
+    subnet_ids = data.aws_subnets.existing_public_subnets.ids
   }
 }
+
 resource "aws_eks_node_group" "node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "eks-nodes-group"
-  node_role_arn   = data.aws_iam_role.eks_node_role.arn          # Reference the existing IAM role
-  subnet_ids      = data.aws_subnets.existing_public_subnets.ids # Fetch existing subnets
+  node_role_arn   = data.aws_iam_role.eks_node_role.arn
+  subnet_ids      = data.aws_subnets.existing_public_subnets.ids
+
   scaling_config {
     desired_size = var.node_count
     min_size     = 1
@@ -44,4 +50,25 @@ resource "aws_eks_node_group" "node_group" {
   instance_types = [var.instance_type]
 }
 
-# Output Cluster Endpoint
+# Kubernetes ConfigMap for aws-auth to include eks-admin
+resource "kubernetes_config_map" "aws_auth" {
+  metadata {
+    name      = "aws-auth"
+    namespace = "kube-system"
+  }
+
+  data = {
+    mapRoles = yamlencode([
+      {
+        rolearn  = "arn:aws:iam::886436961042:role/GitHubActionsOIDC"
+        username = "GitHubActionsOIDC"
+        groups   = ["system:masters"]
+      },
+      {
+        rolearn  = "arn:aws:iam::886436961042:role/eks-admin"
+        username = "eks-admin"
+        groups   = ["system:masters"]
+      }
+    ])
+  }
+}

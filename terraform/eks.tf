@@ -22,7 +22,7 @@ data "aws_iam_role" "eks_node_role" {
 
 # Fetch the IAM role for eks-admin (Ensure this IAM role exists in AWS)
 data "aws_iam_role" "eks_admin_role" {
-  name = "eks-admin"
+  name = aws_iam_role.eks_admin.name
 }
 
 # EKS Cluster using existing subnets

@@ -102,26 +102,6 @@ resource "kubernetes_config_map" "python_web_config" {
 }
 
 # Kubernetes ConfigMap for aws-auth (IAM Role Authentication)
-resource "kubernetes_config_map" "aws_auth" {
-  metadata {
-    name      = "aws-auth"
-    namespace = "kube-system"
-  }
-  data = {
-    mapRoles = yamlencode([
-      {
-        rolearn  = "arn:aws:iam::886436961042:role/GitHubActionsOIDC"
-        username = "GitHubActionsOIDC"
-        groups   = ["system:masters"]
-      },
-      {
-        rolearn  = "arn:aws:iam::886436961042:role/eks-admin"
-        username = "eks-admin"
-        groups   = ["system:masters"]
-      }
-    ])
-  }
-}
 
 # Kubernetes RBAC Role Binding for GitHub Actions OIDC
 resource "kubernetes_cluster_role_binding" "github_actions_rbac" {

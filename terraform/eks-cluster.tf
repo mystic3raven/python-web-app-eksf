@@ -11,6 +11,14 @@ resource "aws_iam_role" "eks_cluster_role" {
       }
     }]
   })
+
+  lifecycle {
+    prevent_destroy = false
+    create_before_destroy = true # Ensures Terraform recreates the role safely
+    ignore_changes = [ name ]   # prevent un
+  }
+
+  depends_on = [aws_vpc.eks_vpc] # ✅ Ensures VPC exists before creating IAM role}
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {

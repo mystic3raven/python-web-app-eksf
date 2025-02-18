@@ -5,7 +5,7 @@ variable "aws_region" {
 
 variable "eks_cluster_name" {
   description = "EKS cluster name"
-  default     = "python-web-app-cluster"
+  default     = "python-web-app-cluster-eksf"
 }
 
 variable "vpc_cidr" {

@@ -68,15 +68,6 @@ resource "aws_iam_role" "eks_fargate_execution_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_fargate_policies" {
-  for_each = toset([
-    "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-  ])
-  role       = aws_iam_role.eks_fargate_execution_role.name
-  policy_arn = each.value
-}
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_policies" {
   for_each = toset([
@@ -114,18 +105,4 @@ resource "aws_iam_role_policy_attachment" "eks_user_policies" {
   policy_arn = each.value
 }
 
-resource "aws_iam_role" "eks_user_role" {
-  name = var.eks_user_role_name
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        AWS = var.developer_role_arn
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
 

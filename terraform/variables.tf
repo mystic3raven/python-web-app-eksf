@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "AWS region to deploy resources"
-  default     = "us-east-1"
+  default     = "us-west-2"
 }
 
 variable "eks_cluster_name" {
@@ -40,5 +40,5 @@ variable "eks_admin_role_name" {
 variable "developer_user_arn" {
   description = "ARN of the developer user who can assume EKS user role"
   type        = string
-  default     = "arn:aws:iam::123456789012:user/developer-user"  # Replace with actual ARN
+  default     = "arn:aws:iam::123456789012:user/developer-user" # Replace with actual ARN
 }

@@ -1,11 +1,14 @@
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "3.14.2"
+  version = "5.6.0" # Upgrade to the latest version
 
   name = "eks-vpc"
-  cidr = var.vpc_cidr
+  cidr = "10.0.0.0/16"
 
-  azs                = ["us-east-1a", "us-east-1b"]
-  private_subnets    = var.subnet_cidrs
-  enable_nat_gateway = true
+  azs             = ["us-west-2a", "us-west-2b"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 }

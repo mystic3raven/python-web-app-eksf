@@ -29,7 +29,7 @@
                 "dynamodb:Query",
                 "dynamodb:UpdateItem"
             ],
-            "Resource": "arn:aws:dynamodb:us-east-1:123456789012:table/terraform-lock"
+            "Resource": "arn:aws:dynamodb:us-west-2:123456789012:table/terraform-lock"
         }
     ]
 }

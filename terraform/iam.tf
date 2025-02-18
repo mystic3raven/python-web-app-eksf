@@ -1,118 +1,131 @@
-resource "aws_iam_role" "eks_cluster_role" {
-  name = "eks-cluster-role"
+resource "aws_iam_role" "eks_fargate_role" {
+  name = "eks-fargate-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "eks.amazonaws.com"
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-# 🚀 IAM Role for GitHub Actions OIDC
-resource "aws_iam_role" "GitHubActionsOIDC" {
-  name = "GitHubActionsOIDC"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Federated = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:sub" = "repo:your-org/your-repo:ref:refs/heads/main"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "eks-fargate-pods.amazonaws.com"
         }
       }
-    }]
+    ]
   })
 }
 
-# 🚀 IAM Role for eks-admin
-resource "aws_iam_role" "eks_admin" {
-  name = "eks-admin"
+resource "aws_iam_role_policy_attachment" "eks_fargate_policy" {
+  role       = aws_iam_role.eks_fargate_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
+}
+
+
+
+# EKS Admin Role
+resource "aws_iam_role" "eks_admin_role" {
+  name = "eks-admin-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+resource "aws_iam_role_policy_attachment" "eks_admin_policies" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    "arn:aws:iam::aws:policy/AmazonEKSServicePolicy",
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+    "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
+    "arn:aws:iam::aws:policy/IAMFullAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+  ])
+  role       = aws_iam_role.eks_admin_role.name
+  policy_arn = each.value
+}
+
+# EKS Fargate Execution Role
+resource "aws_iam_role" "eks_fargate_execution_role" {
+  name = var.eks_fargate_role_name
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
       Principal = {
-        AWS = "arn:aws:iam::886436961042:root"
+        Service = "eks-fargate-pods.amazonaws.com"
       }
       Action = "sts:AssumeRole"
     }]
   })
 }
 
-# 🚀 IAM Policy for eks-admin (Full Access to EKS)
-resource "aws_iam_policy" "eks_admin_policy" {
-  name        = "eks-admin-policy"
-  description = "Full access to manage EKS cluster"
+resource "aws_iam_role_policy_attachment" "eks_fargate_policies" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  ])
+  role       = aws_iam_role.eks_fargate_execution_role.name
+  policy_arn = each.value
+}
 
-  policy = jsonencode({
+resource "aws_iam_role_policy_attachment" "eks_fargate_policies" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+  ])
+  role       = aws_iam_role.eks_fargate_execution_role.name
+  policy_arn = each.value
+}
+
+# EKS User Role
+
+resource "aws_iam_role" "eks_user_role" {
+  name = var.eks_user_role_name
+
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "eks:*",
-          "iam:GetRole",
-          "iam:PassRole",
-          "autoscaling:*",
-          "ec2:DescribeInstances",
-          "ec2:DescribeSecurityGroups",
-          "ec2:DescribeSubnets",
-          "ec2:DescribeVpcs"
-        ]
-        Resource = "*"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        AWS = var.developer_user_arn
       }
-    ]
+      Action = "sts:AssumeRole"
+    }]
   })
 }
 
-# 🚀 Attach IAM Policy to eks-admin Role
-resource "aws_iam_role_policy_attachment" "eks_admin_attach" {
-  policy_arn = aws_iam_policy.eks_admin_policy.arn
-  role       = aws_iam_role.eks_admin.name
+resource "aws_iam_role_policy_attachment" "eks_user_policies" {
+  for_each = toset([
+    "arn:aws:iam::aws:policy/AmazonEKSReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+  ])
+  role       = aws_iam_role.eks_user_role.name
+  policy_arn = each.value
 }
 
-# 🚀 IAM Policy for GitHub Actions Access to EKS
-resource "aws_iam_policy" "GitHubActionsEKSPolicy" {
-  name        = "GitHubActionsEKSPolicy"
-  description = "Allows GitHub Actions to interact with EKS"
+resource "aws_iam_role" "eks_user_role" {
+  name = var.eks_user_role_name
 
-  policy = jsonencode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "eks:DescribeCluster",
-          "eks:ListClusters",
-          "eks:AccessKubernetesApi"
-        ]
-        Resource = "*"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket",
-          "s3:GetObject"
-        ]
-        Resource = "arn:aws:s3:::my-eks-artifacts/*"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        AWS = var.developer_role_arn
       }
-    ]
+      Action = "sts:AssumeRole"
+    }]
   })
 }
 
-# 🚀 Attach IAM Policy to GitHubActionsOIDC Role
-resource "aws_iam_role_policy_attachment" "GitHubActionsEKSAttach" {
-  policy_arn = aws_iam_policy.GitHubActionsEKSPolicy.arn
-  role       = aws_iam_role.GitHubActionsOIDC.name
-}

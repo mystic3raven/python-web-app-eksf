@@ -1,24 +1,24 @@
 variable "aws_region" {
-  description = "AWS Region"
-  default     = "us-west-2"
+  description = "AWS region to deploy resources"
+  default     = "us-east-1"
 }
 
-variable "cluster_name" {
-  description = "EKS Cluster Name"
+variable "eks_cluster_name" {
+  description = "EKS cluster name"
   default     = "python-web-app-cluster"
 }
 
-variable "ecr_repo_name" {
-  description = "ECR Repository Name"
-  default     = "python-web-app"
+variable "vpc_cidr" {
+  description = "VPC CIDR Block"
+  default     = "10.0.0.0/16"
 }
 
-variable "instance_type" {
-  description = "EC2 Instance type for EKS nodes"
-  default     = "t3.medium"
+variable "subnet_cidrs" {
+  description = "Subnet CIDR Blocks"
+  type        = list(string)
+  default     = ["10.0.1.0/24", "10.0.2.0/24"]
 }
-
-variable "node_count" {
-  description = "Number of worker nodes"
-  default     = 2
+variable "developer_role_arn" {
+  description = "ARN of the developer role allowed to access EKS"
+  default     = "arn:aws:iam::886436961042:role/DeveloperRole"
 }

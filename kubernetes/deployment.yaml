@@ -1,38 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-web
-  namespace: python-web
+  name: python-web-app
+  namespace: python-web-app
   labels:
-    app: python-web
+    app: python-web-app
 spec:
-  replicas: 2  # You can adjust this based on load
+  replicas: 2
   selector:
     matchLabels:
-      app: python-web
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
+      app: python-web-app
   template:
     metadata:
       labels:
-        app: python-web
+        app: python-web-app
     spec:
       containers:
-        - name: python-web
-          image: 886436961042.dkr.ecr.us-west-2.amazonaws.com/python-web-app:latest  # Replace with your actual ECR image
-          imagePullPolicy: Always
+        - name: python-web-app
+          image: <ECR_REPOSITORY_URL>:latest  # To be updated dynamically in GitHub Actions
           ports:
-            - containerPort: 8080
-          envFrom:
-            - configMapRef:
-                name: python-web-config  # Ensure this ConfigMap exists
-          resources:
-            requests:
-              cpu: "250m"
-              memory: "512Mi"
-            limits:
-              cpu: "500m"
-              memory: "1Gi"
+            - containerPort: 8000
+          env:
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: ENVIRONMENT
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SECRET_KEY
+            - name: AWS_LOG_GROUP
+              value: "/eks/python-web-app-logs"
+            - name: AWS_REGION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['eks.amazonaws.com/region']
+          volumeMounts:
+            - name: log-volume
+              mountPath: /var/log/app
+      volumes:
+        - name: log-volume
+          emptyDir: {}
+      annotations:
+        fluentbit.io/log-group-name: "/eks/python-web-app-logs"
+        fluentbit.io/log-stream-prefix: "python-web-app"

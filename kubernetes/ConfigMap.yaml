@@ -1,15 +1,7 @@
-resource "kubernetes_config_map" "python_web_config" {
-  metadata {
-    name      = "python-web-config"
-    namespace = "python-web"
-  }
-
-  data = {
-    APP_ENV       = "production"
-    APP_DEBUG     = "false"
-    DATABASE_HOST = "db-host.example.com"
-    DATABASE_PORT = "5432"
-    DATABASE_NAME = "python_web_app"
-    LOG_LEVEL     = "info"
-  }
-}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: python-web-app
+data:
+  ENVIRONMENT: "production"

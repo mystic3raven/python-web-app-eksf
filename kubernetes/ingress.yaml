@@ -1,23 +1,26 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: python-web
-  namespace: python-web
+  name: python-web-app-ingress
+  namespace: python-web-app
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/group.name: python-web-ingress
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:123456789012:certificate/abcde12345-6789-abcde-12345
 spec:
   rules:
-    - host: python-web.example.com  # Replace with your domain or remove if not using host-based routing
+    - host: myapp.example.com  # Change to your domain
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: python-web
+                name: python-web-app
                 port:
                   number: 80
+  tls:
+    - hosts:
+        - myapp.example.com
+      secretName: tls-secret

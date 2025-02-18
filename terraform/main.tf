@@ -13,9 +13,9 @@ terraform {
       version = "~> 2.20"
     }
   }
-  backend "s3" {
-    bucket = "my-terraform-state-bucket"
-    key    = "eks-fargate/terraform.tfstate"
-    region = "us-west-2"
-  }
+  #backend "s3" {
+  #  bucket = "my-terraform-state-bucket"
+  #  key    = "eks-fargate/terraform.tfstate"
+  #  region = "us-west-2"
+  #}
 }

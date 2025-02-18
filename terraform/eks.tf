@@ -5,9 +5,8 @@ module "eks" {
   cluster_name    = var.eks_cluster_name
   cluster_version = "1.27"
 
-  vpc_id         = module.vpc.vpc_id
-  subnet_ids     = module.vpc.private_subnets
-  enable_fargate = true
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
 
   fargate_profiles = {
     python-web-app = {

@@ -37,3 +37,8 @@ variable "eks_admin_role_name" {
   type        = string
   default     = "EKSAdminRole"
 }
+variable "developer_user_arn" {
+  description = "ARN of the developer user who can assume EKS user role"
+  type        = string
+  default     = "arn:aws:iam::123456789012:user/developer-user"  # Replace with actual ARN
+}

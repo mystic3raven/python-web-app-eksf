@@ -105,18 +105,3 @@ resource "aws_iam_role_policy_attachment" "eks_user_policies" {
   policy_arn = each.value
 }
 
-
-resource "aws_iam_role" "eks_fargate_execution_role" {
-  name = var.eks_fargate_role_name  # ✅ Now it will work
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
-      }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}

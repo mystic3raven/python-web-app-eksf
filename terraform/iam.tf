@@ -66,6 +66,9 @@ resource "aws_iam_role" "eks_fargate_execution_role" {
       Action = "sts:AssumeRole"
     }]
   })
+    lifecycle {
+    prevent_destroy = true
+  }
 }
 
 

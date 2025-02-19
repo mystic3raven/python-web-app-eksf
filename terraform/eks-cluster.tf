@@ -13,12 +13,13 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 
   lifecycle {
-    prevent_destroy = false
-    create_before_destroy = true # Ensures Terraform recreates the role safely
-    ignore_changes = [ name ]   # prevent un
+    prevent_destroy       = false
+    create_before_destroy = true   # Ensures Terraform recreates the role safely
+    ignore_changes        = [name] # prevent un
   }
 
-  depends_on = [aws_vpc.eks_vpc] # ✅ Ensures VPC exists before creating IAM role}
+  # depends_on = [aws_vpc.eks_vpc] # ✅ Ensures VPC exists before creating IAM role}
+  depends_on = [module.vpc]
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
@@ -30,6 +31,6 @@ resource "aws_eks_cluster" "eks_cluster" {
   name     = "python-web-app-eks"
   role_arn = aws_iam_role.eks_cluster_role.arn
   vpc_config {
-    subnet_ids = ["subnet-xxxxx", "subnet-yyyyy"] # Replace with your subnet IDs
+    subnet_ids = ["subnet-0479136e2c277b86c", "subnet-058c2de9a903bdd7ey"] # Replace with your subnet IDs
   }
 }

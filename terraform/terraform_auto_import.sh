@@ -2,7 +2,7 @@
 
 # Set AWS Profile and Region (Modify if needed)
 AWS_PROFILE="default"
-AWS_REGION="us-east-1"
+AWS_REGION="us-west-2"
 
 # List of Terraform resources to import
 declare -A RESOURCE_MAP

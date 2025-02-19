@@ -6,10 +6,10 @@ output "cluster_id" {
 
 output "cluster_endpoint" {
   description = "EKS Cluster API Endpoint"
-  value       = aws_eks_cluster.this.endpoint  # ✅ Ensure this exists
+  value       = aws_eks_cluster.this.endpoint # ✅ Ensure this exists
 }
 
 output "cluster_certificate_authority_data" {
   description = "EKS Cluster Certificate Authority Data"
-  value       = aws_eks_cluster.this.certificate_authority[0].data  # ✅ Ensure this exists
+  value       = aws_eks_cluster.this.certificate_authority[0].data # ✅ Ensure this exists
 }

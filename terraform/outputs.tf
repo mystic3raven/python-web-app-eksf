@@ -1,15 +1,16 @@
 
 output "cluster_id" {
   description = "EKS Cluster ID"
-  value       = aws_eks_cluster.this.id
+  value       = module.eks.cluster_id # ✅ Reference module.eks, not aws_eks_cluster.this
 }
 
 output "cluster_endpoint" {
   description = "EKS Cluster API Endpoint"
-  value       = aws_eks_cluster.this.endpoint # ✅ Ensure this exists
+  value       = module.eks.cluster_endpoint # ✅ Reference module.eks
 }
 
 output "cluster_certificate_authority_data" {
   description = "EKS Cluster Certificate Authority Data"
-  value       = aws_eks_cluster.this.certificate_authority[0].data # ✅ Ensure this exists
+  value       = module.eks.cluster_certificate_authority_data # ✅ Reference module.eks
 }
+

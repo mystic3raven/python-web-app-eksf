@@ -6,7 +6,7 @@ resource "aws_eks_cluster" "this" {
     subnet_ids = var.subnet_ids
   }
 
-  depends_on = [aws_iam_role.eks_cluster] 
+  depends_on = [aws_iam_role.eks_cluster]
 }
 
 

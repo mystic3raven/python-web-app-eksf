@@ -57,6 +57,20 @@ resource "aws_iam_role_policy_attachment" "eks_admin_policies" {
   policy_arn = each.value
 }
 
+
+resource "aws_iam_role_policy" "eks_policy" {
+  name   = "eks-inline-policy"
+  role   = aws_iam_role.eks_cluster_role.id
+  policy = jsonencode({
+    Statement = [{
+      Action   = "eks:DescribeCluster"
+      Effect   = "Allow"
+      Resource = "*"
+    }]
+  })
+}
+
+
 # EKS Fargate Execution Role
 resource "aws_iam_role" "eks_fargate_execution_role" {
   name = var.eks_fargate_role_name

@@ -32,7 +32,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-    subnet_ids = module.vpc.private_subnets  # ✅ Only subnets should be defined
+    subnet_ids = module.vpc.private_subnets # ✅ Only subnets should be defined
   }
 }
 

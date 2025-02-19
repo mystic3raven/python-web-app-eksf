@@ -9,3 +9,6 @@ output "eks_fargate_namespace" {
 output "ecr_repository_url" {
   value = aws_ecr_repository.python_web_app.repository_url
 }
+output "cluster_id" {
+  value = aws_eks_cluster.eks_cluster.id
+}

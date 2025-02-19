@@ -1,7 +1,7 @@
 resource "aws_security_group" "alb_sg" {
   name        = "alb-security-group"
   description = "Security group for ALB"
-  vpc_id      = module.vpc.vpc_id # Ensure module.vpc exists
+  vpc_id      = var.vpc_id  # ✅ Use var.vpc_id instead of module.vpc.vpc_id
 
   ingress {
     from_port   = 80
@@ -24,3 +24,4 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+

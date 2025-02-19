@@ -1,6 +1,5 @@
-
 resource "aws_iam_role" "eks_cluster" {
-  name = "python-web-app-eksf-role"
+  name = "${var.cluster_name}-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

@@ -1,5 +1,3 @@
-output "eks_cluster_id" {
+output "cluster_id" {
   value = aws_eks_cluster.this.id
 }
-
-

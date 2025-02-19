@@ -13,4 +13,3 @@ resource "aws_lb_target_group" "eks_tg" {
     unhealthy_threshold = 2
   }
 }
-1

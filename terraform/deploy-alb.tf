@@ -31,7 +31,7 @@ resource "kubernetes_manifest" "alb_controller" {
           containers = [{
             name  = "aws-load-balancer-controller"
             image = "602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller:v2.4.1"
-            args = [
+            args  = [
               "--cluster-name=${module.eks.cluster_id}",
               "--ingress-class=alb",
               "--aws-region=us-west-2"
@@ -41,7 +41,11 @@ resource "kubernetes_manifest" "alb_controller" {
       }
     }
   }
-  depends_on = [module.eks, kubernetes_namespace.kube_system] # 
+
+  depends_on = [
+    module.eks,  # 
+    kubernetes_namespace.kube_system  
+  ]
 }
 
 

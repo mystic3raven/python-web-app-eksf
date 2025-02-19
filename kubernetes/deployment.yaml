@@ -5,6 +5,9 @@ metadata:
   namespace: python-web-app
   labels:
     app: python-web-app
+  annotations:
+    fluentbit.io/log-group-name: "/eks/python-web-app-logs"
+    fluentbit.io/log-stream-prefix: "python-web-app"
 spec:
   replicas: 2
   selector:
@@ -16,10 +19,17 @@ spec:
         app: python-web-app
     spec:
       containers:
-        - name: python-web-app
-          image: <ECR_REPOSITORY_URL>:latest  # To be updated dynamically in GitHub Actions
+        - name: python-web-app  # ✅ Corrected container name
+          image: <ECR_REPOSITORY_URL>:1.0.0
           ports:
             - containerPort: 8000
+          resources:  # ✅ Added resource requests & limits
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           env:
             - name: ENVIRONMENT
               valueFrom:
@@ -36,13 +46,10 @@ spec:
             - name: AWS_REGION
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.annotations['eks.amazonaws.com/region']
+                  fieldPath: metadata.labels['topology.kubernetes.io/region']
           volumeMounts:
             - name: log-volume
               mountPath: /var/log/app
       volumes:
         - name: log-volume
           emptyDir: {}
-      annotations:
-        fluentbit.io/log-group-name: "/eks/python-web-app-logs"
-        fluentbit.io/log-stream-prefix: "python-web-app"

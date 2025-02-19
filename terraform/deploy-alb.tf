@@ -41,7 +41,7 @@ resource "kubernetes_manifest" "alb_controller" {
       }
     }
   }
-
   depends_on = [module.eks, kubernetes_namespace.kube_system]  # 
 }
+
 

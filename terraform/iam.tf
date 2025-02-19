@@ -13,6 +13,11 @@ resource "aws_iam_role" "eks_fargate_role" {
       }
     ]
   })
+
+  lifecycle {
+    prevent_destroy       = true # ✅ Prevents accidental deletion
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "eks_fargate_policy" {
@@ -66,7 +71,7 @@ resource "aws_iam_role" "eks_fargate_execution_role" {
       Action = "sts:AssumeRole"
     }]
   })
-    lifecycle {
+  lifecycle {
     prevent_destroy = true
   }
 }

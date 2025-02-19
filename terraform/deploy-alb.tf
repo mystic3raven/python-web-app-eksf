@@ -1,3 +1,10 @@
+
+resource "kubernetes_namespace" "kube_system" {
+  metadata {
+    name = "kube-system"
+  }
+}
+
 resource "kubernetes_manifest" "alb_controller" {
   manifest = {
     apiVersion = "apps/v1"

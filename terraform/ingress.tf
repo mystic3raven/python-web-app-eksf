@@ -6,7 +6,7 @@ resource "kubernetes_manifest" "app_ingress" {
       name      = "python-web-app-ingress"
       namespace = "default"
       annotations = {
-        "kubernetes.io/ingress.class"      = "alb"
+        "kubernetes.io/ingress.class" = "alb"
         "alb.ingress.kubernetes.io/scheme" = "internet-facing"
       }
     }
@@ -15,7 +15,7 @@ resource "kubernetes_manifest" "app_ingress" {
         host = "your-app.example.com"
         http = {
           paths = [{
-            path     = "/"
+            path = "/"
             pathType = "Prefix"
             backend = {
               service = {
@@ -30,4 +30,6 @@ resource "kubernetes_manifest" "app_ingress" {
       }]
     }
   }
+
+  depends_on = [module.eks, kubernetes_manifest.alb_controller]  # ✅ Ensure ALB Controller is created first
 }

@@ -16,10 +16,10 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   fargate_profiles = {
-    python-web-app = {
+    python-web-app-eksf = {
       selectors = [
         {
-          namespace = "python-web-app"
+          namespace = "python-web-app-eksf"
         }
       ]
     }

@@ -59,8 +59,8 @@ resource "aws_iam_role_policy_attachment" "eks_admin_policies" {
 
 
 resource "aws_iam_role_policy" "eks_policy" {
-  name   = "eks-inline-policy"
-  role   = aws_iam_role.eks_cluster_role.id
+  name = "eks-inline-policy"
+  role = aws_iam_role.eks_cluster_role.id
   policy = jsonencode({
     Statement = [{
       Action   = "eks:DescribeCluster"

@@ -9,7 +9,7 @@ provider "kubernetes" {
 # Add `depends_on` to Kubernetes resources instead
 resource "kubernetes_namespace" "python_web_app" {
   metadata {
-    name = "python-web-app"
+    name = "python-web-app-eksf"
   }
 
   depends_on = [aws_eks_cluster.eks_cluster] # ✅ This is allowed in a resource block

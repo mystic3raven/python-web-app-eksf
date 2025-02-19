@@ -3,7 +3,7 @@ output "eks_cluster_name" {
 }
 
 output "eks_fargate_namespace" {
-  value = "python-web-app"
+  value = "python-web-app-eksf"
 }
 
 output "ecr_repository_url" {
